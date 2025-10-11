@@ -248,6 +248,9 @@ Here are code snippets for some common installation methods (use only one):
   -- Plugin integrations. Use `default = false` to disable all integrations.
   -- Also can be set per plugin (see |MiniHues.config|).
   plugins = { default = true },
+
+  -- Whether to auto adjust highlight groups based on certain events
+  autoadjust = true,
 }
 ```
 

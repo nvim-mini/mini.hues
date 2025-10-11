@@ -186,6 +186,14 @@ end
 ---     },
 ---   })
 --- <
+--- # Auto adjust ~
+---
+--- `config.autoadjust` defines whether to adjust some highlight groups based on
+--- events relevant to them. Currently adjusted groups:
+---
+--- - |hl-MsgSeparator| is adjusted based on `msgsep` flag in |'fillchars'|.
+---   If it is whitespace - highlight background, otherwise - foreground.
+---
 --- # Examples ~
 ---
 --- Here are some possible setup configurations (copy first line and then use
@@ -241,6 +249,9 @@ MiniHues.config = {
   -- Plugin integrations. Use `default = false` to disable all integrations.
   -- Also can be set per plugin (see |MiniHues.config|).
   plugins = { default = true },
+
+  -- Whether to auto adjust highlight groups based on certain events
+  autoadjust = true,
 }
 --minidoc_afterlines_end
 
@@ -417,6 +428,9 @@ end
 ---@param plugins table|nil Table with boolean values indicating whether to create
 ---   highlight groups for specific plugins. See |MiniHues.config| for more details.
 ---   Default: the value from |MiniHues.config|.
+---@param opts table|nil Options. Possible fields:
+---   - <autoadjust> - whether to auto adjust some highlight groups when needed.
+---     Default: value of `autoadjust` in |MiniHues.config|.
 ---
 ---@usage >lua
 ---   local palette = require('mini.hues').make_palette({
@@ -428,10 +442,11 @@ end
 ---   require('mini.hues').apply_palette(palette)
 --- <
 ---@seealso |MiniHues.get_palette()|
-MiniHues.apply_palette = function(palette, plugins)
+MiniHues.apply_palette = function(palette, plugins, opts)
   if type(palette) ~= 'table' then H.error('`palette` should be table with palette colors.') end
   plugins = plugins or MiniHues.config.plugins
   if type(plugins) ~= 'table' then H.error('`plugins` should be table with plugin integrations data.') end
+  opts = vim.tbl_extend('force', { autoadjust = MiniHues.config.autoadjust }, opts or {})
 
   H.palette = vim.deepcopy(palette)
 
@@ -444,13 +459,16 @@ MiniHues.apply_palette = function(palette, plugins)
   -- might cause some issues with `syntax on`.
   vim.g.colors_name = nil
 
-  local p = palette
+  local p, autoadjust = palette, opts.autoadjust
   local hi = function(name, data) vim.api.nvim_set_hl(0, name, data) end
   local has_integration = function(name)
     local entry = plugins[name]
     if entry == nil then return plugins.default end
     return entry
   end
+
+  -- Special autoadjustable highlight groups
+  if autoadjust then H.setup_autoadjust(p) end
 
   -- NOTE: recommendations for adding new highlight groups:
   -- - Put all related groups (like for new plugin) in single paragraph.
@@ -491,7 +509,7 @@ MiniHues.apply_palette = function(palette, plugins)
   hi('ModeMsg',        { fg=p.green,   bg=nil })
   hi('MoreMsg',        { fg=p.azure,   bg=nil })
   hi('MsgArea',        { link='Normal' })
-  hi('MsgSeparator',   { fg=p.accent,  bg=p.bg_mid })
+  hi('MsgSeparator',   H.attr_msgseparator(p, autoadjust))
   hi('NonText',        { fg=p.bg_mid2, bg=nil })
   hi('Normal',         { fg=p.fg,      bg=p.bg })
   hi('NormalFloat',    { fg=p.fg,      bg=p.bg_edge })
@@ -1670,6 +1688,7 @@ H.setup_config = function(config)
     H.error('`accent` should be one of ' .. table.concat(vim.tbl_map(vim.inspect, H.accent_values), ', '))
   end
   H.check_type('plugins', config.plugins, 'table')
+  H.check_type('autoadjust', config.autoadjust, 'boolean')
 
   return config
 end
@@ -1678,7 +1697,8 @@ H.apply_config = function(config)
   MiniHues.config = config
 
   -- Apply palette
-  MiniHues.apply_palette(MiniHues.make_palette(config), config.plugins)
+  local opts = { autoadjust = config.autoadjust }
+  MiniHues.apply_palette(MiniHues.make_palette(config), config.plugins, opts)
 end
 
 -- Palette --------------------------------------------------------------------
@@ -1922,7 +1942,27 @@ H.clip_to_gamut = function(lch)
   return res
 end
 
--- ============================================================================
+-- Auto adjusting -------------------------------------------------------------
+H.setup_autoadjust = function(palette)
+  local gr = vim.api.nvim_create_augroup('MiniHuesAdjust', {})
+  local hi = function(name, data) vim.api.nvim_set_hl(0, name, data) end
+  local adjust = function(ev)
+    local adjust_all = ev.event == 'VimEnter'
+    if adjust_all or ev.match == 'fillchars' then hi('MsgSeparator', H.attr_msgseparator(palette, true)) end
+  end
+
+  -- Use single autocommand without pattern for performance (skips Neovim doing
+  -- pattern matching on the option name). Use 'VimEnter' to work when option
+  -- is set during startup, as 'OptionSet' is not triggered.
+  local au_opts = { group = gr, callback = adjust, desc = 'Autoadjust highlight groups' }
+  vim.api.nvim_create_autocmd({ 'VimEnter', 'OptionSet' }, au_opts)
+end
+
+H.attr_msgseparator = function(p, autoadjust)
+  if not autoadjust then return { fg = p.accent, bg = p.bg_mid } end
+  return vim.o.fillchars:find('msgsep:%S') ~= nil and { fg = p.accent } or { bg = p.bg_mid }
+end
+
 -- Utilities ------------------------------------------------------------------
 H.error = function(msg) error('(mini.hues) ' .. msg, 0) end
 

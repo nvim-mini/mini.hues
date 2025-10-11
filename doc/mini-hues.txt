@@ -172,6 +172,9 @@ Defaults ~
     -- Plugin integrations. Use `default = false` to disable all integrations.
     -- Also can be set per plugin (see |MiniHues.config|).
     plugins = { default = true },
+
+    -- Whether to auto adjust highlight groups based on certain events
+    autoadjust = true,
   }
 <
 See |MiniHues.make_palette()| for more information about how certain settings
@@ -196,6 +199,14 @@ Example which will load only "mini.nvim" integration: >lua
     },
   })
 <
+# Auto adjust ~
+
+`config.autoadjust` defines whether to adjust some highlight groups based on
+events relevant to them. Currently adjusted groups:
+
+- |hl-MsgSeparator| is adjusted based on `msgsep` flag in |fillchars|. If it is
+  whitespace - highlight background, otherwise - highlight foreground.
+
 # Examples ~
 
 Here are some possible setup configurations (copy first line and then use
@@ -319,7 +330,7 @@ See also ~
 
 ------------------------------------------------------------------------------
                                                       *MiniHues.apply_palette()*
-                 `MiniHues.apply_palette`({palette}, {plugins})
+             `MiniHues.apply_palette`({palette}, {plugins}, {opts})
 Apply palette
 
 Create color scheme highlight groups and terminal colors based on supplied
@@ -331,6 +342,9 @@ Parameters ~
 {plugins} `(table|nil)` Table with boolean values indicating whether to create
   highlight groups for specific plugins. See |MiniHues.config| for more details.
   Default: the value from |MiniHues.config|.
+{opts} `(table|nil)` Options. Possible fields:
+  - <autoadjust> - whether to auto adjust some highlight groups when needed.
+    Default: value of `autoadjust` in |MiniHues.config|.
 
 Usage ~
 >lua
