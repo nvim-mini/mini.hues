@@ -35,7 +35,7 @@ Supported highlight groups:
 
 - Plugins (either with explicit definition or by verification that default
   highlighting works appropriately):
-    - [nvim-mini/mini.nvim](https://github.com/nvim-mini/mini.nvim)
+    - [nvim-mini/mini.nvim](https://nvim-mini.org/mini.nvim)
     - [akinsho/bufferline.nvim](https://github.com/akinsho/bufferline.nvim)
     - [anuvyklack/hydra.nvim](https://github.com/anuvyklack/hydra.nvim)
     - [DanilaMihailov/beacon.nvim](https://github.com/DanilaMihailov/beacon.nvim)
