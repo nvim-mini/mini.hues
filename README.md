@@ -130,6 +130,7 @@ Supported highlight groups:
     - [DanilaMihailov/beacon.nvim](https://github.com/DanilaMihailov/beacon.nvim)
     - [folke/lazy.nvim](https://github.com/folke/lazy.nvim)
     - [folke/noice.nvim](https://github.com/folke/noice.nvim)
+    - [folke/snacks.nvim](https://github.com/folke/snacks.nvim)
     - [folke/todo-comments.nvim](https://github.com/folke/todo-comments.nvim)
     - [folke/trouble.nvim](https://github.com/folke/trouble.nvim)
     - [folke/which-key.nvim](https://github.com/folke/which-key.nvim)

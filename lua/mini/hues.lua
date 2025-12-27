@@ -39,6 +39,7 @@
 ---     - [DanilaMihailov/beacon.nvim](https://github.com/DanilaMihailov/beacon.nvim)
 ---     - [folke/lazy.nvim](https://github.com/folke/lazy.nvim)
 ---     - [folke/noice.nvim](https://github.com/folke/noice.nvim)
+---     - [folke/snacks.nvim](https://github.com/folke/snacks.nvim)
 ---     - [folke/todo-comments.nvim](https://github.com/folke/todo-comments.nvim)
 ---     - [folke/trouble.nvim](https://github.com/folke/trouble.nvim)
 ---     - [folke/which-key.nvim](https://github.com/folke/which-key.nvim)
@@ -1098,6 +1099,19 @@ MiniHues.apply_palette = function(palette, plugins, opts)
   if has_integration('folke/noice.nvim') then
     hi('NoiceCmdlinePopupBorder', { fg=p.azure,  bg=nil })
     hi('NoiceConfirmBorder',      { fg=p.yellow, bg=nil })
+  end
+
+  if has_integration('folke/snacks.nvim') then
+    hi('SnacksPickerBufFlags',           { link='Comment' })
+    hi('SnacksPickerDir',                { link='Comment' })
+    hi('SnacksPickerGitStatusIgnored',   { link='Comment' })
+    hi('SnacksPickerGitStatusUntracked', { link='Comment' })
+    hi('SnacksPickerKeymapRhs',          { link='Comment' })
+    hi('SnacksPickerListCursorLine',     { link='CursorLine' })
+    hi('SnacksPickerPathHidden',         { link='Comment' })
+    hi('SnacksPickerPathIgnored',        { link='Comment' })
+    hi('SnacksPickerTotals',             { link='Comment' })
+    hi('SnacksPickerUnselected',         { link='Comment' })
   end
 
   -- folke/trouble.nvim
