@@ -108,8 +108,10 @@
 ---       palette and only after that set |g:colors_name| to "myscheme".
 ---
 --- - This module doesn't define |cterm-colors| for implementation simplicity.
----   Use |mini.colors| module, |MiniColors-colorscheme:add_cterm_attributes()|
----   in particular.
+---   It only works if |'termguicolors'| is enabled (should be done automatically
+---   if the terminal emulator supporst 24-bit colors). If not possible,
+---   use |MiniColors-colorscheme:add_cterm_attributes()| from |mini.colors|
+---   to define custom color scheme with 16-color support.
 ---@tag MiniHues
 
 --- Bundled color schemes
